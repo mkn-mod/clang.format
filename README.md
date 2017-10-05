@@ -10,14 +10,15 @@ Link phase module
 
 ## Usage
 
+```yaml
 mod:
   - name: clang.format
     version: master
     arg:
         link:
-            style: file       [optional, default=file]
-            types: cpp:cxx:cc [optional, default=cpp:cxx:cc]
-  
+            style: file       #[optional, default=file]
+            types: cpp:cxx:cc #[optional, default=cpp:cxx:cc]
+```
 
 ## Building
   
