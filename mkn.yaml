@@ -15,10 +15,9 @@ profile:
   - name: base
     dep:
       - name: mkn
-        profile: lib
+        profile: mod
         version: ${version}
         local: ${maiken_location}
-        scm: https://github.com/maiken/maiken
 
   - name: test
     parent: base
