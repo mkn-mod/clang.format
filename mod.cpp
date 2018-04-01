@@ -74,10 +74,8 @@ class FormatModule : public maiken::Module {
     KLOG(DBG) << p;
     p.start();
   }
-
- public:
-  void link(maiken::Application& a, const YAML::Node& node)
-      KTHROW(std::exception) override {
+  void run(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) {
     VALIDATE_NODE(node);
     kul::os::PushDir pushd(a.project().dir());
 
@@ -111,6 +109,17 @@ class FormatModule : public maiken::Module {
         }
       }
     for (const auto& file : files) FORMAT(kul::File(file), node);
+  }
+
+ public:
+  void init(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) override {
+    run(a, node);
+  }
+
+  void link(maiken::Application& a, const YAML::Node& node)
+      KTHROW(std::exception) override {
+    run(a, node);
   }
 };
 }  // namespace clang

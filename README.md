@@ -24,6 +24,18 @@ mod:
   
   Windows cl:
 
+    mkn clean build -tSa -EHsc -d
+
+
+  *nix gcc:
+
+    mkn clean build -tSa "-O2 -fPIC" -d -l "-pthread -ldl" 
+
+
+## Testing
+  
+  Windows cl:
+
     mkn clean build -tSa -EHsc -dp test run
 
 
