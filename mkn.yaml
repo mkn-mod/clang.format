@@ -7,6 +7,7 @@ property:
 
 parent: base
 src: mod.cpp
+mode: shared
 if_arg:
     win_shared: -DYAML_CPP_DLL
     shared: -DKUL_SHARED
@@ -16,7 +17,6 @@ profile:
     dep:
       - name: mkn
         profile: mod
-        version: ${version}
         local: ${maiken_location}
 
   - name: test
