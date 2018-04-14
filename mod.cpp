@@ -81,9 +81,7 @@ class FormatModule : public maiken::Module {
 
     std::unordered_set<std::string> types;
     if (!node["types"]) {
-      types.insert("cpp");
-      types.insert("cxx");
-      types.insert("cc");
+      types = {"cpp", "cxx", "cc", "cc", "h", "hpp"};
     } else
       for (const auto& s : kul::String::SPLIT(node["types"].Scalar(), ":"))
         types.insert(s);
