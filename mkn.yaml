@@ -1,7 +1,6 @@
 
 name: clang.format
 version: master
-
 property:
     maiken_location: ${MKN_HOME}/app/mkn/${version}
 

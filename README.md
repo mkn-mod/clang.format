@@ -45,3 +45,12 @@ mod:
 ## WARNINGS
 
 This can rearrange your header includes which may break your build!
+
+
+
+## Environment Variables
+
+    Key             CLANG_HOME
+    Type            string
+    Default         ""
+    Description     If set - looks for adds $CLANG_HOME/bin to PATH
