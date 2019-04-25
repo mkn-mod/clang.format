@@ -28,11 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
-#include "maiken.hpp"
-#define KUL_EXPORT
-#undef _KUL_DEFS_HPP_
-#include "kul/defs.hpp"
+#include "maiken/module/init.hpp"
 
 #include <unordered_set>
 
