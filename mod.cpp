@@ -88,7 +88,7 @@ class FormatModule : public maiken::Module {
     for (const auto& p1 : sources)
       if (types.count(p1.first))
         for (const auto& p2 : p1.second)
-          for (const auto& p3 : p2.second) files.insert(p3);
+          for (const auto& p3 : p2.second) files.insert(p3.in());
 
     if (node["paths"])
       for (const auto& path : kul::cli::asArgs(node["paths"].Scalar())) {
