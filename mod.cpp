@@ -36,17 +36,20 @@ namespace mkn {
 namespace clang {
 
 class FormatModule : public maiken::Module {
- private:
-  std::string ref = "ref";
+ public:
+  void init(maiken::Application& a, const YAML::Node& node) KTHROW(std::exception) override {
+    run(a, node);
+  }
 
-  const std::string& getRef1() { return ref; }
-  const std::string& getRef2() { return ref; }
+  void link(maiken::Application& a, const YAML::Node& node) KTHROW(std::exception) override {
+    run(a, node);
+  }
 
  protected:
   static void VALIDATE_NODE(const YAML::Node& node) {
     using namespace kul::yaml;
-    Validator({NodeValidator("args"), NodeValidator("paths"),
-               NodeValidator("style"), NodeValidator("types")})
+    Validator({NodeValidator("args"), NodeValidator("paths"), NodeValidator("style"),
+               NodeValidator("types")})
         .validate(node);
   }
   void FORMAT(const kul::File&& f, const YAML::Node& node) {
@@ -70,8 +73,7 @@ class FormatModule : public maiken::Module {
     KLOG(DBG) << p;
     p.start();
   }
-  void run(maiken::Application& a, const YAML::Node& node)
-      KTHROW(std::exception) {
+  void run(maiken::Application& a, const YAML::Node& node) KTHROW(std::exception) {
     VALIDATE_NODE(node);
     kul::os::PushDir pushd(a.project().dir());
 
@@ -79,8 +81,7 @@ class FormatModule : public maiken::Module {
     if (!node["types"]) {
       types = {"cpp", "cxx", "cc", "cc", "h", "hpp"};
     } else
-      for (const auto& s : kul::String::SPLIT(node["types"].Scalar(), ":"))
-        types.insert(s);
+      for (const auto& s : kul::String::SPLIT(node["types"].Scalar(), ":")) types.insert(s);
 
     std::unordered_set<std::string> files;
 
@@ -93,8 +94,7 @@ class FormatModule : public maiken::Module {
     if (node["paths"])
       for (const auto& path : kul::cli::asArgs(node["paths"].Scalar())) {
         kul::Dir d(path);
-        if (!d)
-          KEXCEPT(kul::fs::Exception, "Directory does not exist: ") << d.path();
+        if (!d) KEXCEPT(kul::fs::Exception, "Directory does not exist: ") << d.path();
         for (const auto& file : d.files(1)) {
           const std::string name = file.name();
           if (name.find(".") == std::string::npos) continue;
@@ -104,17 +104,6 @@ class FormatModule : public maiken::Module {
       }
     for (const auto& file : files) FORMAT(kul::File(file), node);
   }
-
- public:
-  void init(maiken::Application& a, const YAML::Node& node)
-      KTHROW(std::exception) override {
-    run(a, node);
-  }
-
-  void link(maiken::Application& a, const YAML::Node& node)
-      KTHROW(std::exception) override {
-    run(a, node);
-  }
 };
 }  // namespace clang
 }  // namespace mkn
@@ -123,6 +112,4 @@ extern "C" KUL_PUBLISH maiken::Module* maiken_module_construct() {
   return new mkn ::clang ::FormatModule;
 }
 
-extern "C" KUL_PUBLISH void maiken_module_destruct(maiken::Module* p) {
-  delete p;
-}
+extern "C" KUL_PUBLISH void maiken_module_destruct(maiken::Module* p) { delete p; }
