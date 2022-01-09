@@ -1,0 +1,31 @@
+name: windows-latest
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get mkn
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        name: mkn
+        branch: master
+        workflow: build_win.yml
+        repo: mkn/maiken
+
+    - env:
+        KUL_GIT_CO: --depth 1
+        MKN_CL_PREFERRED: 1
+      shell: cmd
+      run: | # /bin/link interferes with cl/link.exe
+        bash -c "rm /bin/link"
+        call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        bash -c 'KLOG=2 ./mkn clean build run -dtOa "-EHsc -std:c++17"'
+        bash -c 'KLOG=2 ./mkn clean build run -dtOp test -a "-EHsc -std:c++17"'

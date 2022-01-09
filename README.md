@@ -15,7 +15,7 @@ mod:
   link:
     args:  $str       #[optional, default="", additional values to pass to clang-format]
     style: file       #[optional, default=file, can be google/mozilla]
-    types: cpp:cxx:cc #[optional, default=cpp:cxx:cc:c:h:hpp]
+    types: cpp cxx cc #[optional, default= "cpp cxx cc c h hpp"]
     paths: inc src    #[optional, inherits sources but not include paths]
 ```
 
