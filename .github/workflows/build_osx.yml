@@ -1,0 +1,29 @@
+name: macos-latest
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get mkn
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        name: mkn
+        branch: master
+        workflow: build_osx.yml
+        repo: mkn/maiken
+
+    - env:
+        MKN_LIB_LINK_LIB: 1
+        KUL_GIT_CO: --depth 1
+      run: |
+        chmod +x mkn
+        KLOG=2 ./mkn clean build run -dtOa "-std=c++17 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++17 -fPIC"
