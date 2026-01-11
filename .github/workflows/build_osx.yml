@@ -10,20 +10,13 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Get mkn
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        name: mkn
-        branch: master
-        workflow: build_osx.yml
-        repo: mkn/maiken
+    - uses: actions/checkout@v4
 
     - env:
         MKN_LIB_LINK_LIB: 1
         KUL_GIT_CO: --depth 1
       run: |
+        curl -Lo mkn https://github.com/mkn/mkn/releases/download/latest/mkn_arm_osx
         chmod +x mkn
         KLOG=2 ./mkn clean build run -dtOa "-std=c++17 -fPIC"
         KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++17 -fPIC"

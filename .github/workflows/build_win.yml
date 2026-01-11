@@ -10,15 +10,12 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Get mkn
-      uses: dawidd6/action-download-artifact@v2
+    # setup MSVC compiler
+    - uses: ilammy/msvc-dev-cmd@v1
       with:
-        name: mkn
-        branch: master
-        workflow: build_win.yml
-        repo: mkn/maiken
+        arch: amd64
 
     - env:
         KUL_GIT_CO: --depth 1
@@ -26,6 +23,6 @@ jobs:
       shell: cmd
       run: | # /bin/link interferes with cl/link.exe
         bash -c "rm /bin/link"
-        call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        bash -c 'curl -Lo mkn.exe https://github.com/mkn/mkn/releases/download/latest/mkn.exe'
         bash -c 'KLOG=2 ./mkn clean build run -dtOa "-EHsc -std:c++17"'
         bash -c 'KLOG=2 ./mkn clean build run -dtOp test -a "-EHsc -std:c++17"'
