@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2013, Philip Deegan.
+Copyright (c) 2026, Philip Deegan.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <unordered_set>
 
-namespace mkn {
-namespace clang {
+namespace mkn::clang {
 
 class FormatModule : public maiken::Module {
  public:
@@ -59,7 +58,7 @@ class FormatModule : public maiken::Module {
     if (!clangHome.empty()) {
       mkn::kul::Dir cBin("bin", clangHome);
       if (!cBin) KEXCEPT(kul::Exception, "$CLANG_HOME/bin does not exist");
-      mkn::kul::cli::EnvVar pa("PATH", cBin.real(), mkn::kul::cli::EnvVarMode::PREP);
+      mkn::kul::env::Var pa("PATH", cBin.real(), mkn::kul::env::Var::Mode::PREP);
       p.var(pa.name(), pa.toString());
     };
 
@@ -94,7 +93,7 @@ class FormatModule : public maiken::Module {
     if (node["paths"])
       for (const auto& path : mkn::kul::cli::asArgs(node["paths"].Scalar())) {
         mkn::kul::Dir d(path);
-        if (!d) KEXCEPT(kul::fs::Exception, "Directory does not exist: ") << d.path();
+        if (!d) KEXCEPT(kul::fs::Exception, "Directory does not exist: ", d.path());
         for (const auto& file : d.files(1)) {
           const std::string name = file.name();
           if (name.find(".") == std::string::npos) continue;
@@ -105,8 +104,7 @@ class FormatModule : public maiken::Module {
     for (const auto& file : files) FORMAT(kul::File(file), node);
   }
 };
-}  // namespace clang
-}  // namespace mkn
+}  // namespace mkn::clang
 
 extern "C" MKN_KUL_PUBLISH maiken::Module* maiken_module_construct() {
   return new mkn ::clang ::FormatModule;

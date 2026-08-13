@@ -1,0 +1,34 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - env:
+        MKN_KUL_GIT_CO: --depth 1
+      run: |
+        curl -Lo mkn https://github.com/mkn/mkn/releases/download/latest/mkn_nix
+        chmod +x mkn
+        KLOG=2 ./mkn clean build run -dtOa "-std=c++17 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++17 -fPIC"
+  macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - env:
+        MKN_LIB_LINK_LIB: 1
+        MKN_KUL_GIT_CO: --depth 1
+      run: |
+        curl -Lo mkn https://github.com/mkn/mkn/releases/download/latest/mkn_arm_osx
+        chmod +x mkn
+        KLOG=2 ./mkn clean build run -dtOa "-std=c++17 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++17 -fPIC"

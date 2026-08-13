@@ -1,3 +1,4 @@
+#! clean build -p test run
 
 name: clang.format
 version: master
@@ -9,8 +10,8 @@ parent: base
 src: mod.cpp
 mode: shared
 if_arg:
-    win_shared: -DYAML_CPP_DLL
-    shared: -DKUL_SHARED
+    win_static: -DYAML_CPP_STATIC_DEFINE
+    shared: -DMKN_KUL_SHARED
 
 profile:
 - name: base
@@ -21,7 +22,7 @@ profile:
   main: test.cpp
   dep: mkn&${maiken_location}[lib]
   if_link:
-    nix: -ldl -pthread
+    nix_shared: -ldl -pthread
 
 - name: format
   mod: |
