@@ -1,10 +1,7 @@
-#! clean build -p test run
+#! clean build run
 
 name: clang.format
 version: master
-property:
-    maiken_location: ${MKN_HOME}/app/mkn/${version}
-
 
 parent: base
 src: mod.cpp
@@ -15,14 +12,7 @@ if_arg:
 
 profile:
 - name: base
-  dep: mkn&${maiken_location}[mod]
-
-- name: test
-  parent: base
-  main: test.cpp
-  dep: mkn&${maiken_location}[lib]
-  if_link:
-    nix_shared: -ldl -pthread
+  dep: mkn.mod
 
 - name: format
   mod: |

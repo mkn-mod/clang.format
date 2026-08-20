@@ -1,3 +1,4 @@
+
 name: build
 
 on:
@@ -6,29 +7,27 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  MKN_KUL_GIT_CO: --depth 1
+  CURL_GET: curl -fL --retry 3 --retry-delay 2
+  PATH_GET: https://github.com/mkn/mkn/releases/download/latest
+
 jobs:
   ubuntu:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
-
-    - env:
-        MKN_KUL_GIT_CO: --depth 1
-      run: |
-        curl -Lo mkn https://github.com/mkn/mkn/releases/download/latest/mkn_nix
+    - run: |
+        $CURL_GET -o mkn ${PATH_GET}/mkn_nix
         chmod +x mkn
-        KLOG=2 ./mkn clean build run -dtOa "-std=c++17 -fPIC"
-        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++17 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOa "-std=c++20 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++20 -fPIC"
   macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v6
-
-    - env:
-        MKN_LIB_LINK_LIB: 1
-        MKN_KUL_GIT_CO: --depth 1
-      run: |
-        curl -Lo mkn https://github.com/mkn/mkn/releases/download/latest/mkn_arm_osx
+    - run: |
+        $CURL_GET -o mkn ${PATH_GET}/mkn_arm_osx
         chmod +x mkn
-        KLOG=2 ./mkn clean build run -dtOa "-std=c++17 -fPIC"
-        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++17 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOa "-std=c++20 -fPIC"
+        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++20 -fPIC"
