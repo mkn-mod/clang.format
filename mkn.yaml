@@ -16,6 +16,9 @@ profile:
       win_static: -DYAML_CPP_STATIC_DEFINE
       shared: -DMKN_KUL_SHARED
 
+- name: test
+  mod: clang.format
+
 - name: format
   mod: |
     clang.format{init{style: google, paths: .}}
