@@ -5,7 +5,7 @@
 Link phase module
 
 ## Prerequisites
-  [maiken](https://github.com/Dekken/maiken)
+  [maiken](https://github.com/mkn/mkn)
 
 ## Usage
 

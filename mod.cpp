@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2013, Philip Deegan.
+Copyright (c) 2026, Philip Deegan.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,21 +28,26 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "maiken/module/init.hpp"
+#include "mkn/mod/init.hpp"
+
+#include "mkn/kul/cli.hpp"
+#include "mkn/kul/log.hpp"
+#include "mkn/kul/os.hpp"
+#include "mkn/kul/proc.hpp"
+#include "mkn/kul/yaml.hpp"
 
 #include <unordered_set>
 
-namespace mkn {
-namespace clang {
+namespace mkn::clang {
 
-class FormatModule : public maiken::Module {
+class FormatModule : public mkn::mod::Module {
  public:
-  void init(maiken::Application& a, YAML::Node const& node) KTHROW(std::exception) override {
-    run(a, node);
+  void init(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) override {
+    run(c, node);
   }
 
-  void link(maiken::Application& a, YAML::Node const& node) KTHROW(std::exception) override {
-    run(a, node);
+  void link(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) override {
+    run(c, node);
   }
 
  protected:
@@ -59,7 +64,7 @@ class FormatModule : public maiken::Module {
     if (!clangHome.empty()) {
       mkn::kul::Dir cBin("bin", clangHome);
       if (!cBin) KEXCEPT(kul::Exception, "$CLANG_HOME/bin does not exist");
-      mkn::kul::cli::EnvVar pa("PATH", cBin.real(), mkn::kul::cli::EnvVarMode::PREP);
+      mkn::kul::env::Var pa("PATH", cBin.real(), mkn::kul::env::Var::Mode::PREP);
       p.var(pa.name(), pa.toString());
     };
 
@@ -73,9 +78,9 @@ class FormatModule : public maiken::Module {
     KLOG(DBG) << p;
     p.start();
   }
-  void run(maiken::Application& a, YAML::Node const& node) KTHROW(std::exception) {
+  void run(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) {
     VALIDATE_NODE(node);
-    mkn::kul::os::PushDir pushd(a.project().dir());
+    mkn::kul::os::PushDir pushd(c.state().projectDir);
 
     std::unordered_set<std::string> types;
     if (!node["types"]) {
@@ -85,16 +90,17 @@ class FormatModule : public maiken::Module {
 
     std::unordered_set<std::string> files;
 
-    const auto sources = a.sourceMap();
-    for (const auto& p1 : sources)
-      if (types.count(p1.first))
-        for (const auto& p2 : p1.second)
-          for (const auto& p3 : p2.second) files.insert(p3.in());
+    for (const auto& file : c.state().sourceFiles) {
+      const std::string name = mkn::kul::File(file).name();
+      if (name.find(".") == std::string::npos) continue;
+      const std::string type = name.substr(name.rfind(".") + 1);
+      if (types.count(type)) files.insert(file);
+    }
 
     if (node["paths"])
       for (const auto& path : mkn::kul::cli::asArgs(node["paths"].Scalar())) {
         mkn::kul::Dir d(path);
-        if (!d) KEXCEPT(kul::fs::Exception, "Directory does not exist: ") << d.path();
+        if (!d) KEXCEPT(kul::fs::Exception, "Directory does not exist: ", d.path());
         for (const auto& file : d.files(1)) {
           const std::string name = file.name();
           if (name.find(".") == std::string::npos) continue;
@@ -105,11 +111,10 @@ class FormatModule : public maiken::Module {
     for (const auto& file : files) FORMAT(kul::File(file), node);
   }
 };
-}  // namespace clang
-}  // namespace mkn
+}  // namespace mkn::clang
 
-extern "C" MKN_KUL_PUBLISH maiken::Module* maiken_module_construct() {
+extern "C" MKN_KUL_PUBLISH mkn::mod::Module* maiken_module_construct() {
   return new mkn ::clang ::FormatModule;
 }
 
-extern "C" MKN_KUL_PUBLISH void maiken_module_destruct(maiken::Module* p) { delete p; }
+extern "C" MKN_KUL_PUBLISH void maiken_module_destruct(mkn::mod::Module* p) { delete p; }

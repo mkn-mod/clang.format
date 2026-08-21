@@ -1,27 +1,23 @@
+#! clean build -O
 
 name: clang.format
-version: master
-property:
-    maiken_location: ${MKN_HOME}/app/mkn/${version}
-
 
 parent: base
 src: mod.cpp
 mode: shared
-if_arg:
-    win_shared: -DYAML_CPP_DLL
-    shared: -DKUL_SHARED
 
 profile:
 - name: base
-  dep: mkn&${maiken_location}[mod]
+  dep: mkn.mod
+  if_dep:
+    bsd: parse.yaml[lib]
+    win: parse.yaml[lib]
+  if_arg:
+      win_static: -DYAML_CPP_STATIC_DEFINE
+      shared: -DMKN_KUL_SHARED
 
 - name: test
-  parent: base
-  main: test.cpp
-  dep: mkn&${maiken_location}[lib]
-  if_link:
-    nix: -ldl -pthread
+  mod: clang.format
 
 - name: format
   mod: |
