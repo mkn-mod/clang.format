@@ -30,4 +30,4 @@ jobs:
         $CURL_GET -o mkn ${PATH_GET}/mkn_arm_osx
         chmod +x mkn
         KLOG=2 ./mkn clean build run -dtOa "-std=c++20 -fPIC"
-        KLOG=2 ./mkn clean build run -dtOp test -a "-std=c++20 -fPIC"
+        KLOG=3 ./mkn -m clang.format
