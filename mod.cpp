@@ -80,7 +80,7 @@ class FormatModule : public mkn::mod::Module {
   }
   void run(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) {
     VALIDATE_NODE(node);
-    mkn::kul::os::PushDir pushd(c.projectDir());
+    mkn::kul::os::PushDir pushd(c.state().projectDir);
 
     std::unordered_set<std::string> types;
     if (!node["types"]) {
