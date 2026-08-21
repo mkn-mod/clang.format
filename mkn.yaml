@@ -1,18 +1,20 @@
-#! clean build run
+#! clean build -O
 
 name: clang.format
-version: master
 
 parent: base
 src: mod.cpp
 mode: shared
-if_arg:
-    win_static: -DYAML_CPP_STATIC_DEFINE
-    shared: -DMKN_KUL_SHARED
 
 profile:
 - name: base
   dep: mkn.mod
+  if_dep:
+    bsd: parse.yaml[lib]
+    win: parse.yaml[lib]
+  if_arg:
+      win_static: -DYAML_CPP_STATIC_DEFINE
+      shared: -DMKN_KUL_SHARED
 
 - name: format
   mod: |
