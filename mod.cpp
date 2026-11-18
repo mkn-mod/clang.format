@@ -100,7 +100,7 @@ class FormatModule : public mkn::mod::Module {
     if (node["paths"])
       for (const auto& path : mkn::kul::cli::asArgs(node["paths"].Scalar())) {
         mkn::kul::Dir d(path);
-        if (!d) KEXCEPT(kul::fs::Exception, "Directory does not exist: ", d.path());
+        if (!d) KEXCEPT(kul::fsys::Exception, "Directory does not exist: ", d.path());
         for (const auto& file : d.files(1)) {
           const std::string name = file.name();
           if (name.find(".") == std::string::npos) continue;
