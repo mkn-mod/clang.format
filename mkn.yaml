@@ -4,7 +4,7 @@ name: clang.format
 property:
   # dependency versions: master on master (not the default branch: mkn.mod's is
   #  the rolling latest, whose mkn.kul differs from a master project's)
-  mkn.mod.version: master
+  mkn.mod.version: latest
 
 parent: base
 src: mod.cpp
@@ -17,8 +17,8 @@ profile:
       shared: -DMKN_KUL_SHARED
 
 - name: test
-  mod: clang.format#master
+  mod: clang.format#latest
 
 - name: format
   mod: |
-    clang.format#master{init{style: google, paths: .}}
+    clang.format#latest{init{style: google, paths: .}}
