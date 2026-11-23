@@ -29,12 +29,12 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "mkn/mod/init.hpp"
+#include "mkn/kul/bon.hpp"
 
 #include "mkn/kul/cli.hpp"
 #include "mkn/kul/log.hpp"
 #include "mkn/kul/os.hpp"
 #include "mkn/kul/proc.hpp"
-#include "mkn/kul/yaml.hpp"
 
 #include <unordered_set>
 
@@ -42,22 +42,19 @@ namespace mkn::clang {
 
 class FormatModule : public mkn::mod::Module {
  public:
-  void init(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) override {
+  void init(mkn::mod::Context& c, mkn::mod::Node const& node) KTHROW(std::exception) override {
     run(c, node);
   }
 
-  void link(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) override {
+  void link(mkn::mod::Context& c, mkn::mod::Node const& node) KTHROW(std::exception) override {
     run(c, node);
   }
 
  protected:
-  static void VALIDATE_NODE(YAML::Node const& node) {
-    using namespace mkn::kul::yaml;
-    Validator({NodeValidator("args"), NodeValidator("paths"), NodeValidator("style"),
-               NodeValidator("types")})
-        .validate(node);
+  static void VALIDATE_NODE(mkn::mod::Node const& node) {
+    mkn::kul::bon::validate(node, {"args", "paths", "style", "types"});
   }
-  void FORMAT(const mkn::kul::File&& f, YAML::Node const& node) {
+  void FORMAT(const mkn::kul::File&& f, mkn::mod::Node const& node) {
     mkn::kul::Process p("clang-format");
 
     std::string clangHome(kul::env::GET("CLANG_HOME"));
@@ -69,24 +66,24 @@ class FormatModule : public mkn::mod::Module {
     };
 
     p << "-i";
-    if (!node["style"])
+    if (!node.find("style"))
       p << "-style=file";
     else
-      p << std::string("-style=" + node["style"].Scalar());
+      p << std::string("-style=" + node["style"].str());
     p << f.escm();
 
     KLOG(DBG) << p;
     p.start();
   }
-  void run(mkn::mod::Context& c, YAML::Node const& node) KTHROW(std::exception) {
+  void run(mkn::mod::Context& c, mkn::mod::Node const& node) KTHROW(std::exception) {
     VALIDATE_NODE(node);
     mkn::kul::os::PushDir pushd(c.state().projectDir);
 
     std::unordered_set<std::string> types;
-    if (!node["types"]) {
+    if (!node.find("types")) {
       types = {"cpp", "cxx", "cc", "cc", "h", "hpp"};
     } else
-      for (const auto& s : mkn::kul::String::SPLIT(node["types"].Scalar(), " ")) types.insert(s);
+      for (const auto& s : mkn::kul::String::SPLIT(node["types"].str(), " ")) types.insert(s);
 
     std::unordered_set<std::string> files;
 
@@ -97,8 +94,8 @@ class FormatModule : public mkn::mod::Module {
       if (types.count(type)) files.insert(file);
     }
 
-    if (node["paths"])
-      for (const auto& path : mkn::kul::cli::asArgs(node["paths"].Scalar())) {
+    if (node.find("paths"))
+      for (const auto& path : mkn::kul::cli::asArgs(node["paths"].str())) {
         mkn::kul::Dir d(path);
         if (!d) KEXCEPT(kul::fsys::Exception, "Directory does not exist: ", d.path());
         for (const auto& file : d.files(1)) {
