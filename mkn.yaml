@@ -22,8 +22,8 @@ profile:
       shared: -DMKN_KUL_SHARED
 
 - name: test
-  mod: clang.format
+  mod: clang.format#master
 
 - name: format
   mod: |
-    clang.format{init{style: google, paths: .}}
+    clang.format#master{init{style: google, paths: .}}
